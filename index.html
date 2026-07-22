@@ -270,7 +270,7 @@ function mkMsg(a,r,ch,sentDt,sent){
   } else {
     var deliv2=Math.round(sent*0.965), fail=sent-deliv2;
     stats={sent:sent,deliv:deliv2,fail:fail};
-    reasons=splitReasons(fail,[["Invalid number",0.5],["Carrier rejected",0.3],["Opted out",0.2]]);
+    reasons=splitReasons(fail,[["Invalid number",0.5],["Country blocked",0.3],["Opted out",0.2]]);
   }
   var daysAgo=Math.round((dayStart(TODAY)-dayStart(sentDt))/86400000);
   return {id:id,code:a.code,type:a.type,label:a.label,rtype:r.rtype,ch:ch,sentDt:sentDt,sent:sent,stats:stats,reasons:reasons,daysAgo:daysAgo};
