@@ -266,7 +266,7 @@ function mkMsg(a,r,ch,sentDt,sent){
   if(ch==="EMAIL"){
     var deliv=Math.round(sent*0.981), bounce=sent-deliv, open=Math.round(deliv*0.62);
     stats={sent:sent,deliv:deliv,open:open,bounce:bounce};
-    reasons=splitReasons(bounce,[["Hard bounce",0.48],["Mailbox full",0.27],["Spam block",0.16],["Soft bounce",0.09]]);
+    reasons=splitReasons(bounce,[["Hard bounce",0.48],["Soft bounce",0.36],["Opted out",0.16]]);
   } else {
     var deliv2=Math.round(sent*0.965), fail=sent-deliv2;
     stats={sent:sent,deliv:deliv2,fail:fail};
