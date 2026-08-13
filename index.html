@@ -43,6 +43,7 @@
   --pa-radius-pill: 16px;
   --pa-radius-sm: 4px;
   --pa-radius-lg: 8px;
+
   --pa-elev-2: 0 1px 5px 0 rgba(0,0,0,0.12), 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.20);
   --pa-elev-card: 0 10px 14px -6px rgba(0,0,0,0.06), 0 4px 6px -4px rgba(0,0,0,0.06);
 }
@@ -51,6 +52,7 @@ html,body{height:100%;margin:0;}
 body{background:var(--pa-paper);font-family:var(--pa-font-sans);color:var(--pa-ink);-webkit-font-smoothing:antialiased;}
 a{color:var(--pa-primary);text-decoration:none;cursor:pointer;}
 a:hover{color:var(--pa-primary-700);}
+.pa-code-link:hover{text-decoration:underline;}
 svg.ic{display:inline-block;vertical-align:middle;flex:none;}
 
 /* shell */
@@ -398,16 +400,13 @@ function overview(v){
 
   var rows = v.activities.map(function(a){
     return '<tr>'+
-      '<td style="font-weight:500;font-family:var(--pa-font-display);letter-spacing:0.3px;">'+a.code+'</td>'+
+      '<td><a href="#" data-act="open" data-code="'+a.code+'" title="Open activity details" class="pa-code-link" style="font-weight:500;font-family:var(--pa-font-display);letter-spacing:0.3px;color:var(--pa-primary);text-decoration:none;cursor:pointer;">'+a.code+'</a></td>'+
       '<td><span style="display:inline-flex;align-items:center;gap:6px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:20px;border-radius:3px;background:var(--pa-primary-12a);color:var(--pa-primary);font-size:10px;font-weight:700;letter-spacing:0.5px;">'+a.type+'</span><span style="font-size:12px;color:var(--pa-ink-3);">'+a.typeLabel+'</span></span></td>'+
       '<td style="color:var(--pa-ink-2);">'+a.dateLabel+'</td>'+
       '<td><span style="display:inline-flex;align-items:center;height:22px;padding:0 12px;border-radius:11px;font-size:11px;font-weight:500;white-space:nowrap;background:'+a.badgeBg+';color:'+a.badgeFg+';">'+a.daysLabel+'</span></td>'+
-      '<td><div style="display:flex;align-items:center;gap:5px;">'+a.groups.map(function(g){
+      '<td style="text-align:right;"><div style="display:inline-flex;align-items:center;gap:5px;justify-content:flex-end;white-space:nowrap;">'+a.groups.map(function(g){
         return '<button title="'+esc(g.title)+'" data-act="cgroup" data-code="'+a.code+'" data-g="'+g.k+'" style="display:inline-flex;align-items:center;gap:3px;height:24px;padding:0 9px 0 7px;border-radius:12px;font-family:var(--pa-font-sans);font-size:10px;font-weight:700;letter-spacing:0.4px;text-transform:uppercase;white-space:nowrap;cursor:pointer;transition:all 150ms cubic-bezier(.4,0,.2,1);background:'+g.bg+';color:'+g.fg+';border:1px solid '+g.bd+';">'+icon(g.icon,13,"currentColor")+g.label+'</button>';
       }).join("")+'<span style="font-size:11px;font-weight:600;margin-left:2px;color:'+a.statusFg+';">'+a.statusLabel+'</span></div></td>'+
-      '<td style="text-align:right;"><div style="display:inline-flex;align-items:center;gap:2px;justify-content:flex-end;">'+
-        '<button class="pa-btn pa-btn--tertiary pa-btn--sm" data-act="open" data-code="'+a.code+'">Open</button>'+
-      '</div></td>'+
     '</tr>';
   }).join("");
 
@@ -430,12 +429,12 @@ function overview(v){
     '</div>'+
     customRange+
     '<div style="overflow-x:auto;border-top:1px solid var(--pa-divider);">'+
-    '<table class="t-table" style="border:none;border-radius:0;min-width:720px;">'+
+    '<table class="t-table" style="border:none;border-radius:0;min-width:900px;width:100%;table-layout:auto;">'+
       '<thead><tr>'+
-        '<th style="width:96px;"><span style="display:inline-flex;align-items:center;gap:2px;cursor:pointer;user-select:none;" data-act="sort" data-k="code">Activity'+icon(v.sortCodeIcon,15,v.sortCodeColor)+'</span></th>'+
-        '<th>Type</th>'+
-        '<th><span style="display:inline-flex;align-items:center;gap:2px;cursor:pointer;user-select:none;" data-act="sort" data-k="date">Event Date'+icon(v.sortDateIcon,15,v.sortDateColor)+'</span></th>'+
-        '<th style="width:124px;">Window</th><th style="width:268px;">Customized</th><th style="width:96px;text-align:right;">Actions</th></tr></thead>'+
+        '<th style="width:14%;"><span style="display:inline-flex;align-items:center;gap:2px;cursor:pointer;user-select:none;" data-act="sort" data-k="code">Activity'+icon(v.sortCodeIcon,15,v.sortCodeColor)+'</span></th>'+
+        '<th style="width:22%;">Type</th>'+
+        '<th style="width:24%;"><span style="display:inline-flex;align-items:center;gap:2px;cursor:pointer;user-select:none;" data-act="sort" data-k="date">Event Date'+icon(v.sortDateIcon,15,v.sortDateColor)+'</span></th>'+
+        '<th style="width:18%;">Days to Event</th><th style="width:1%;white-space:nowrap;text-align:left;">Completed</th></tr></thead>'+
       '<tbody>'+rows+'</tbody>'+
     '</table></div>'+
     (v.noActivities ? '<div style="padding:40px 24px;text-align:center;color:var(--pa-ink-3);font-size:13px;">No activities fall within this date range.</div>' : '')+
@@ -772,7 +771,7 @@ document.getElementById("app").addEventListener("click", function(e){
   else if(act==="sort"){ var k=t.getAttribute("data-k"); setState(state.sortKey===k?{sortDir:state.sortDir==="asc"?"desc":"asc"}:{sortKey:k,sortDir:k==="code"?"asc":"desc"}); }
   else if(act==="cgroup"){ var c=t.getAttribute("data-code"), gk=t.getAttribute("data-g");
     var cm=Object.assign({},state.custom); var cur=Object.assign({},cm[c]||{}); cur[gk]=!cur[gk]; cm[c]=cur; setState({custom:cm}); }
-  else if(act==="open") setState({selectedActivity:t.getAttribute("data-code"),activeTab:"reminders",filter:null});
+  else if(act==="open"){ e.preventDefault(); setState({selectedActivity:t.getAttribute("data-code"),activeTab:"reminders",filter:null}); }
   else if(act==="queue") setState({queueDay:t.getAttribute("data-day")});
   else if(act==="recent") setState({anMsgId:null,anRecentDay:parseInt(t.getAttribute("data-n"),10)});
   else if(act==="msg") setState({anMsgId:t.getAttribute("data-id")});
